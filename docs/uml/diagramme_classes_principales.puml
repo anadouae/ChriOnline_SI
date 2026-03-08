@@ -1,0 +1,184 @@
+@startuml ChriOnline_Classes_Principales
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Diagramme de Classes - ChriOnline
+
+' ==================== ÉNUMÉRATIONS ====================
+enum UserRole {
+  CLIENT
+  ADMIN
+}
+
+enum OrderStatus {
+  EN_ATTENTE
+  VALIDEE
+  EXPEDIEE
+  LIVREE
+}
+
+' ==================== PROTOCOLE ====================
+class Protocol <<static>> {
+  + REGISTER : String
+  + LOGIN : String
+  + LOGOUT : String
+  + GET_PRODUCTS : String
+  + ADD_TO_CART : String
+  + REMOVE_FROM_CART : String
+  + GET_CART : String
+  + VALIDATE_ORDER : String
+  + OK : String
+  + ERROR : String
+  + SEPARATOR : String
+  + DEFAULT_PORT : int
+}
+
+' ==================== CLASSES PRINCIPALES ====================
+
+class Utilisateur {
+  - id : int
+  - nomUtilisateur : String
+  - motDePasse : String
+  - email : String
+  - adresse : String
+  - telephone : String
+  - role : UserRole
+  - dateInscription : Date
+  + getId() : int
+  + getEmail() : String
+  + getName() : String
+  + getRole() : UserRole
+  + inscription()
+  + connexion()
+  + modifierProfil()
+  + authentifier(motDePasse : String) : boolean
+}
+
+class Client {
+  - preferences : String
+  - historiqueAchats : List
+  + passerCommande()
+  + visualiserHistoriqueAchats()
+  + gererPanier()
+}
+
+class Administrateur {
+  - droitsAcces : String
+  + gererProduits()
+  + gererUtilisateurs()
+  + gererCommandes()
+}
+
+class SessionUtilisateur {
+  - id : String
+  - dateExpiration : Date
+  + estValide() : boolean
+}
+
+class Categorie {
+  - id : int
+  - nom : String
+  - description : String
+  + getId() : int
+  + getNom() : String
+  + ajouterCategorie()
+  + modifierCategorie()
+}
+
+class Produit {
+  - id : int
+  - nom : String
+  - description : String
+  - prix : double
+  - quantiteStock : int
+  + getId() : int
+  + getNom() : String
+  + getPrix() : double
+  + getStock() : int
+  + estDisponible(qte : int) : boolean
+  + decrementerStock(qte : int) : void
+  + ajouterProduit()
+  + modifierProduit()
+  + supprimerProduit()
+}
+
+class Panier {
+  - id : int
+  - idUtilisateur : int
+  - dateCreation : Date
+  + ajouterProduit()
+  + supprimerProduit()
+  + modifierQuantite()
+  + calculerTotal()
+}
+
+class PanierProduit {
+  - id : int
+  - idPanier : int
+  - idProduit : int
+  - quantite : int
+  - prixUnitaire : double
+  + getQuantite() : int
+  + getPrixUnitaire() : double
+  + getSousTotal() : double
+}
+
+class Commande {
+  - id : String
+  - idUtilisateur : int
+  - dateCommande : Date
+  - statut : OrderStatus
+  - montantTotal : double
+  - adresseLivraison : String
+  - methodePaiement : String
+  + getId() : String
+  + getTotal() : double
+  + getStatut() : OrderStatus
+  + setStatut(s : OrderStatus) : void
+  + passerCommande()
+  + modifierStatut()
+  + calculerTotal() : double
+}
+
+class CommandeProduit {
+  - id : int
+  - idCommande : String
+  - idProduit : int
+  - quantite : int
+  - prixUnitaire : double
+  + getQuantite() : int
+  + getPrixUnitaire() : double
+  + getSousTotal() : double
+}
+
+class Paiement {
+  - id : int
+  - idCommande : String
+  - montant : double
+  - datePaiement : Date
+  - methodePaiement : String
+  - statut : String
+  + effectuerPaiement()
+}
+
+' ==================== RELATIONS ====================
+Utilisateur <|-- Client
+Utilisateur <|-- Administrateur
+Utilisateur ..> UserRole : role
+Utilisateur "1" -- "*" SessionUtilisateur : a
+
+Utilisateur "1" -- "1" Panier : possède
+Utilisateur "1" -- "*" Commande : passe
+
+Categorie "1" -- "*" Produit : contient
+
+Panier "1" -- "*" PanierProduit : contient
+Produit "1" -- "*" PanierProduit : dans
+
+Commande "1" -- "*" CommandeProduit : contient
+Produit "1" -- "*" CommandeProduit : dans
+
+Commande "1" -- "1" Paiement : a
+Commande ..> OrderStatus : statut
+
+@enduml

@@ -1,0 +1,265 @@
+@startuml ChriOnline_Diagramme_Classes
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+
+title Diagramme de Classes - ChriOnline
+
+' ==================== ÉNUMÉRATIONS ====================
+enum UserRole {
+  CLIENT
+  ADMIN
+}
+
+enum OrderStatus {
+  EN_ATTENTE
+  VALIDEE
+  EXPEDIEE
+  LIVREE
+  ANNULEE
+}
+
+' ==================== PACKAGE MODÈLE MÉTIER ====================
+package "Modèle métier (Domain)" #E8F5E9 {
+
+  class Category {
+    - id : int
+    - name : String
+    - description : String
+    + getId() : int
+    + getName() : String
+    + getDescription() : String
+  }
+
+  class User {
+    - id : int
+    - email : String
+    - passwordHash : String
+    - name : String
+    - role : UserRole
+    - phone : String
+    - address : String
+    + getId() : int
+    + getEmail() : String
+    + getName() : String
+    + getRole() : UserRole
+    + authenticate(password : String) : boolean
+  }
+
+  class Product {
+    - id : int
+    - name : String
+    - description : String
+    - price : double
+    - stock : int
+    + getId() : int
+    + getName() : String
+    + getPrice() : double
+    + getStock() : int
+    + isAvailable(qty : int) : boolean
+    + decrementStock(qty : int) : void
+  }
+
+  class Order {
+    - id : String
+    - total : double
+    - status : OrderStatus
+    - paymentMethod : String
+    - createdAt : Date
+    + getId() : String
+    + getTotal() : double
+    + getStatus() : OrderStatus
+    + setStatus(s : OrderStatus) : void
+    + calculateTotal() : double
+  }
+
+  class OrderItem {
+    - id : int
+    - quantity : int
+    - unitPrice : double
+    + getQuantity() : int
+    + getUnitPrice() : double
+    + getSubtotal() : double
+  }
+
+  class CartItem {
+    - id : int
+    - quantity : int
+    + getQuantity() : int
+    + getSubtotal(price : double) : double
+  }
+
+  class UserSession {
+    - id : String
+    - expiresAt : Date
+    + isValid() : boolean
+  }
+}
+
+' ==================== PACKAGE COMMUN / PROTOCOLE ====================
+package "Common (Protocole)" #E3F2FD {
+
+  class Protocol <<static>> {
+    + REGISTER : String
+    + LOGIN : String
+    + LOGOUT : String
+    + GET_PRODUCTS : String
+    + ADD_TO_CART : String
+    + REMOVE_FROM_CART : String
+    + GET_CART : String
+    + VALIDATE_ORDER : String
+    + OK : String
+    + ERROR : String
+    + SEPARATOR : String
+    + DEFAULT_PORT : int
+  }
+}
+
+' ==================== PACKAGE SERVEUR ====================
+package "Serveur" #FFF3E0 {
+
+  class ChriOnlineServer {
+    - port : int
+    - threadPool : ExecutorService
+    + main(args : String[]) : void
+    + start() : void
+    + stop() : void
+  }
+
+  class ClientHandler implements Runnable {
+    - socket : Socket
+    - requestHandler : RequestHandler
+    + run() : void
+    - processRequest(request : String) : String
+  }
+
+  class RequestHandler <<interface>> {
+    + handle(request : String) : String
+  }
+
+  class AuthHandler {
+    + login(email : String, password : String) : User
+    + register(email : String, password : String, name : String) : User
+    + logout(userId : int) : void
+  }
+
+  class ProductHandler {
+    + getProducts() : List<Product>
+    + getProduct(id : int) : Product
+  }
+
+  class CartHandler {
+    + addToCart(userId : int, productId : int, qty : int) : void
+    + removeFromCart(userId : int, productId : int) : void
+    + getCart(userId : int) : List<CartItem>
+    + getTotal(userId : int) : double
+  }
+
+  class OrderHandler {
+    + validateOrder(userId : int, payment : PaymentInfo) : String
+    + generateOrderId() : String
+    + getOrders(userId : int) : List<Order>
+  }
+
+  class DatabaseManager {
+    + getConnection() : Connection
+    + getUserByEmail(email : String) : User
+    + getProducts() : List<Product>
+    + createOrder(order : Order, items : List<OrderItem>) : void
+    + updateStock(productId : int, qty : int) : void
+  }
+}
+
+' ==================== PACKAGE CLIENT ====================
+package "Client" #FCE4EC {
+
+  class ChriOnlineClient {
+    - socket : Socket
+    - host : String
+    - port : int
+    + connect() : void
+    + sendRequest(request : String) : String
+    + disconnect() : void
+  }
+
+  class NetworkService {
+    - client : ChriOnlineClient
+    + login(email : String, password : String) : User
+    + getProducts() : List<Product>
+    + addToCart(productId : int, qty : int) : void
+    + validateOrder(payment : PaymentInfo) : String
+  }
+
+  class PaymentInfo {
+    - cardNumber : String
+    - cardExpiry : String
+    - cvv : String
+    + getCardNumber() : String
+    + getCardExpiry() : String
+    + getCvv() : String
+  }
+}
+
+' ==================== PACKAGE INTERFACE ====================
+package "Interface (Swing/JavaFX)" #F3E5F5 {
+
+  class LoginFrame {
+    - networkService : NetworkService
+    + show() : void
+    + onLoginSuccess(user : User) : void
+  }
+
+  class ProductListPanel {
+    - products : List<Product>
+    + refresh() : void
+    + onProductClick(product : Product) : void
+  }
+
+  class CartPanel {
+    - cartItems : List<CartItem>
+    + addProduct(product : Product, qty : int) : void
+    + removeProduct(productId : int) : void
+    + getTotal() : double
+    + refresh() : void
+  }
+
+  class CheckoutPanel {
+    + showPaymentForm() : void
+    + validateOrder() : void
+  }
+}
+
+' ==================== RELATIONS ====================
+User "1" -- "*" Order : passe >
+User "1" -- "*" CartItem : possède >
+User "1" -- "*" UserSession : a >
+
+Category "1" -- "*" Product : contient >
+Product "*" -- "*" CartItem : dans >
+Product "*" -- "*" OrderItem : dans >
+
+Order "1" -- "*" OrderItem : contient >
+Order "1" -- "1" User : appartient à >
+
+ChriOnlineServer "1" -- "*" ClientHandler : gère >
+ClientHandler ..> RequestHandler : utilise
+AuthHandler ..|> RequestHandler : implémente
+ProductHandler ..|> RequestHandler : implémente
+CartHandler ..|> RequestHandler : implémente
+OrderHandler ..|> RequestHandler : implémente
+
+AuthHandler ..> DatabaseManager : utilise
+ProductHandler ..> DatabaseManager : utilise
+CartHandler ..> DatabaseManager : utilise
+OrderHandler ..> DatabaseManager : utilise
+
+ChriOnlineClient ..> NetworkService : utilise
+LoginFrame ..> NetworkService : utilise
+ProductListPanel ..> NetworkService : utilise
+CartPanel ..> NetworkService : utilise
+CheckoutPanel ..> NetworkService : utilise
+
+User ..> UserRole : a
+Order ..> OrderStatus : a
+
+@enduml

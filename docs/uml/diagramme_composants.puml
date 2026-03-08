@@ -1,0 +1,53 @@
+@startuml ChriOnline_Composants
+!theme plain
+
+title Diagramme de Composants - Architecture ChriOnline
+
+package "Client (Desktop)" {
+  [ChriOnlineClient\n.jar] as client
+  componen t [Interface\nSwing/JavaFX] as ui
+  component [Module Common\nProtocol, Models] as common_client
+  
+  client --> ui : utilise
+  client --> common_client : utilise
+}
+
+package "Serveur" {
+  [ChriOnlineServer\n.jar] as server
+  component [ClientHandler\n(Thread par client)] as handler
+  component [Handlers\nAuth, Product, Cart, Order] as handlers
+  component [Module Common] as common_server
+  
+  server --> handler : crée
+  handler --> handlers : délègue
+  handler --> common_server : utilise
+}
+
+package "Base de données" {
+  database "MySQL / PostgreSQL\n/ SQLite" as db
+}
+
+cloud "Réseau" {
+  [Socket TCP\nPort 12345] as tcp
+  [DatagramSocket UDP\nNotifications] as udp
+}
+
+client -down-> tcp : connexion
+server -down-> tcp : écoute
+handlers -down-> db : JDBC
+server -down-> udp : optionnel
+
+note right of tcp
+  **Cahier des charges**
+  Communication TCP pour
+  opérations principales
+  (auth, panier, commande)
+end note
+
+note right of udp
+  **Niveau avancé**
+  Notifications de
+  confirmation
+end note
+
+@enduml

@@ -1,0 +1,233 @@
+@startuml ChriOnline_Diagramme_Vertical
+!theme plain
+skinparam classAttributeIconSize 0
+top to bottom direction
+skinparam RankSep 80
+skinparam NodeSep 60
+
+title Diagramme de Classes - ChriOnline (Version Verticale)
+
+' ==================== 1. UTILISATEURS ET RÔLES ====================
+package "1. Gestion des utilisateurs" #E8F5E9 {
+
+  class Utilisateur {
+    - idUtilisateur : int
+    - nom : String
+    - prenom : String
+    - email : String
+    - motDePasse : String
+    - adresse : String
+    - ville : String
+    - codePostal : String
+    - pays : String
+    - telephone : String
+    - dateInscription : Date
+    - derniereConnexion : Date
+    - statut : String
+    + inscrire()
+    + connecter()
+    + deconnecter()
+    + modifierProfil()
+    + changerMotDePasse()
+  }
+
+  class Role {
+    - idRole : int
+    - nomRole : String
+    - description : String
+  }
+
+  class Client {
+    - idClient : int
+    - preference : String
+    - historiqueAchats : List
+  }
+
+  class Administrateur {
+    - idAdmin : int
+    - droitsAcces : String
+  }
+
+  Utilisateur <|-- Client
+  Utilisateur <|-- Administrateur
+  Utilisateur "0..*" -- "0..*" Role : a
+}
+
+' ==================== 2. PRODUITS ET CATÉGORIES ====================
+package "2. Catalogue produits" #E3F2FD {
+
+  class Categorie {
+    - idCategorie : int
+    - nom : String
+    - description : String
+  }
+
+  class Fournisseur {
+    - idFournisseur : int
+    - nomFournisseur : String
+    - contact : String
+    - adresse : String
+    - telephone : String
+    - email : String
+  }
+
+  class Produit {
+    - idProduit : int
+    - nom : String
+    - description : String
+    - prix : double
+    - quantiteStock : int
+    - dateAjout : Date
+    - dateModification : Date
+    - categorie : String
+    - images : String
+    - tags : String
+    + ajouterProduit()
+    + modifierProduit()
+    + supprimerProduit()
+    + mettreAJourStock()
+  }
+
+  Categorie "1" -- "*" Produit : contient
+  Fournisseur "1" -- "*" Produit : fournit
+}
+
+' ==================== 3. PANIER ====================
+package "3. Panier" #FFF3E0 {
+
+  class Panier {
+    - idPanier : int
+    - dateCreation : Date
+    - dateDerniereModification : Date
+    - statutPanier : String
+    + ajouterProduit()
+    + retirerProduit()
+    + modifierQuantite()
+    + viderPanier()
+    + calculerTotal()
+  }
+
+  Client "1" -- "1" Panier : possède
+  Panier "0..*" -- "*" Produit : contient produit
+}
+
+' ==================== 4. COMMANDE ET PAIEMENT ====================
+package "4. Commandes et paiement" #F3E5F5 {
+
+  class Commande {
+    - idCommande : String
+    - dateCommande : Date
+    - statutCommande : String
+    - montantTotal : double
+    - adresseLivraison : String
+    - adresseFacturation : String
+    - modePaiement : String
+    + creerCommande()
+    + modifierStatut()
+    + calculerMontantTotal()
+  }
+
+  class LigneCommande {
+    - idLigneCommande : int
+    - quantite : int
+    - prixUnitaire : double
+  }
+
+  class Paiement {
+    - idPaiement : int
+    - montant : double
+    - datePaiement : Date
+    - statutPaiement : String
+    - modePaiement : String
+    - transactionId : String
+  }
+
+  class Livraison {
+    - idLivraison : int
+    - adresseLivraison : String
+    - dateExpedition : Date
+    - dateLivraisonEstimee : Date
+    - dateLivraisonReelle : Date
+    - statutLivraison : String
+    - transporteur : String
+    - numeroSuivi : String
+  }
+
+  Client "1" -- "*" Commande : passe
+  Commande "1" -- "1" Paiement : a
+  Commande "1" -- "1" Livraison : a
+  Commande "1" -- "*" LigneCommande : contient
+  Produit "1" -- "*" LigneCommande : référence
+}
+
+' ==================== 5. FONCTIONNALITÉS ADDITIONNELLES ====================
+package "5. Fonctionnalités additionnelles" #FCE4EC {
+
+  class Notification {
+    - idNotification : int
+    - idUtilisateurCible : int
+    - typeNotification : String
+    - message : String
+    - dateCreation : Date
+    - estLue : boolean
+    + envoyerNotification()
+    + marquerCommeLue()
+  }
+
+  class Commentaire {
+    - idCommentaire : int
+    - idProduit : int
+    - idUtilisateur : int
+    - note : int
+    - texteCommentaire : String
+    - dateCommentaire : Date
+    + ajouterCommentaire()
+    + modifierCommentaire()
+    + supprimerCommentaire()
+  }
+
+  class Promotion {
+    - idPromotion : int
+    - nom : String
+    - description : String
+    - typePromotion : String
+    - valeur : double
+    - dateDebut : Date
+    - dateFin : Date
+    - codePromo : String
+    - conditions : String
+  }
+
+  class HistoriqueConnexion {
+    - idHistorique : int
+    - idUtilisateur : int
+    - dateConnexion : Date
+    - adresseIP : String
+    - appareil : String
+  }
+
+  class HistoriqueActivite {
+    - idActivite : int
+    - idUtilisateur : int
+    - typeActivite : String
+    - description : String
+    - dateActivite : Date
+  }
+
+  class Wishlist {
+    - idWishlist : int
+    - nom : String
+    - dateCreation : Date
+  }
+
+  Utilisateur "1" -- "*" Notification : reçoit
+  Utilisateur "1" -- "*" HistoriqueConnexion : a
+  Utilisateur "1" -- "*" HistoriqueActivite : a
+  Utilisateur "1" -- "*" Commentaire : écrit
+  Produit "1" -- "*" Commentaire : a
+  Produit "0..*" -- "0..*" Promotion : applique
+  Client "1" -- "*" Wishlist : a
+  Produit "0..*" -- "*" Wishlist : contient
+}
+
+@enduml

@@ -1,0 +1,72 @@
+@startuml ChriOnline_Sequence_Achat
+!theme plain
+
+title Diagramme de Séquence - Processus d'Achat
+
+actor "Client" as user
+participant "Interface\n(Swing/JavaFX)" as ui
+participant "ChriOnlineClient\n(Socket TCP)" as client
+participant "ChriOnlineServer\n(ServerSocket)" as server
+participant "ClientHandler" as handler
+participant "Base de\nDonnées" as db
+
+== Connexion ==
+user -> ui : Se connecter
+ui -> client : connect(host, port)
+client -> server : Socket TCP
+server -> handler : Nouvelle connexion (Thread)
+server --> client : Connexion établie
+
+== Authentification ==
+user -> ui : Login (email, password)
+ui -> client : sendRequest("LOGIN|email|password")
+client -> server : LOGIN|email|password
+server -> handler : processRequest()
+handler -> db : getUserByEmail()
+db --> handler : User
+handler --> client : OK|userId|nom
+client --> ui : Réponse
+ui --> user : Accès catalogue
+
+== Consultation produits ==
+user -> ui : Voir les produits
+ui -> client : sendRequest("GET_PRODUCTS")
+client -> server : GET_PRODUCTS
+server -> handler : processRequest()
+handler -> db : getProducts()
+db --> handler : List<Product>
+handler --> client : OK|id1|nom1|prix1|...
+client --> ui : Liste produits
+ui --> user : Affiche catalogue
+
+== Ajout au panier ==
+user -> ui : Ajouter produit au panier
+ui -> client : sendRequest("ADD_TO_CART|userId|productId|qty")
+client -> server : ADD_TO_CART|...
+server -> handler : processRequest()
+handler -> db : addToCart()
+db --> handler : OK
+handler --> client : OK
+client --> ui : Succès
+ui --> user : Panier mis à jour
+
+== Validation commande ==
+user -> ui : Valider commande
+ui -> user : Formulaire paiement (carte simulée)
+user -> ui : Données carte (fictives)
+ui -> client : sendRequest("VALIDATE_ORDER|userId|cardNum|exp|cvv")
+client -> server : VALIDATE_ORDER|...
+server -> handler : processRequest()
+handler -> db : getCart(userId)
+db --> handler : CartItems
+handler -> db : createOrder()\nupdateStock()
+db --> handler : orderId
+handler --> client : OK|orderId
+client --> ui : orderId
+ui --> user : Commande confirmée
+
+== Notification (UDP - optionnel) ==
+server -> client : UDP: Notification confirmation
+ui --> user : "Votre commande XXX est validée"
+
+@enduml

@@ -1,0 +1,99 @@
+@startuml ChriOnline_Cas_Utilisation
+!theme plain
+
+title Diagramme de Cas d'Utilisation - ChriOnline
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Client" as client
+actor "Administrateur" as admin
+
+rectangle "ChriOnline - Application E-Commerce" {
+
+  package "Authentification" {
+    usecase "S'inscrire" as UC1
+    usecase "Se connecter" as UC2
+    usecase "Se déconnecter" as UC3
+  }
+
+  package "Catalogue produits" {
+    usecase "Consulter la liste des produits" as UC4
+    usecase "Voir les détails d'un produit" as UC5
+  }
+
+  package "Panier" {
+    usecase "Ajouter au panier" as UC6
+    usecase "Supprimer du panier" as UC7
+    usecase "Voir le panier / Calculer le total" as UC8
+  }
+
+  package "Commande" {
+    usecase "Valider une commande" as UC9
+    usecase "Payer (paiement simulé)" as UC10
+    usecase "Consulter l'historique des commandes" as UC11
+  }
+
+  package "Profil" {
+    usecase "Gérer son profil" as UC12
+  }
+
+  package "Administration" {
+    usecase "Gérer les produits\n(ajouter, modifier, supprimer)" as UC13
+    usecase "Gérer les commandes" as UC14
+    usecase "Gérer les utilisateurs" as UC15
+  }
+
+  package "Gestion catégories" {
+    usecase "Gérer les catégories" as UC16
+  }
+
+  package "Stock" {
+    usecase "Mise à jour du stock\n(après achat)" as UC17
+  }
+}
+
+' Acteur Client
+client --> UC1
+client --> UC2
+client --> UC3
+client --> UC4
+client --> UC5
+client --> UC6
+client --> UC7
+client --> UC8
+client --> UC9
+client --> UC10
+client --> UC11
+client --> UC12
+
+' Acteur Administrateur
+admin --> UC2
+admin --> UC3
+admin --> UC4
+admin --> UC5
+admin --> UC13
+admin --> UC14
+admin --> UC15
+admin --> UC16
+
+' Héritage administrateur = client avec droits étendus
+admin --|> client
+
+' Extensions / Include
+UC9 ..> UC10 : <<include>>
+UC9 ..> UC8 : <<include>>
+UC17 ..> UC9 : <<include>>
+
+' Légende
+note right of UC1
+  **Niveau minimum**
+  Enregistrement utilisateurs
+end note
+
+note right of UC13
+  **Niveau avancé**
+  Interface administrateur
+end note
+
+@enduml
