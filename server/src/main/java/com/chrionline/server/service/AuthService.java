@@ -47,14 +47,14 @@ public class AuthService {
 
     /**
      * LOGIN|email|password
-     * Retourne OK|userId|nom ou ERROR|message
+     * Retourne OK|userId|email|name|role ou ERROR|message
      */
     public String login(String email, String password) {
         if (email == null || password == null || email.isBlank() || password.isBlank()) {
             return Protocol.ERROR + Protocol.SEPARATOR + "INVALID_DATA";
         }
 
-        String sql = "SELECT id, name, password_hash FROM users WHERE email = ?";
+        String sql = "SELECT id, email, name, role, password_hash FROM users WHERE email = ?";
 
         try (Connection conn = com.chrionline.server.db.DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -64,12 +64,14 @@ public class AuthService {
                     return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
                 }
                 int userId = rs.getInt("id");
+                String userEmail = rs.getString("email");
                 String name = rs.getString("name");
+                String role = rs.getString("role");
                 String storedHash = rs.getString("password_hash");
                 if (!checkPassword(password, storedHash)) {
                     return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
                 }
-                return Protocol.OK + Protocol.SEPARATOR + userId + Protocol.SEPARATOR + name;
+                return Protocol.OK + Protocol.SEPARATOR + userId + Protocol.SEPARATOR + userEmail + Protocol.SEPARATOR + name + Protocol.SEPARATOR + (role != null ? role : "CLIENT");
             }
         } catch (SQLException e) {
             return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
@@ -83,8 +85,9 @@ public class AuthService {
         return Protocol.OK;
     }
 
+    /** Hash simple (hashCode). Pour production : BCrypt. */
     private static String hashPassword(String plain) {
-        return String.valueOf(plain.hashCode()); // simplifié ; en production utiliser BCrypt
+        return String.valueOf(plain.hashCode());
     }
 
     private static boolean checkPassword(String plain, String storedHash) {

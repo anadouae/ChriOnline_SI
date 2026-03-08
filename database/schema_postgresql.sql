@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Trigger pour updated_at (équivalent ON UPDATE CURRENT_TIMESTAMP)
+-- Les NOTICE "trigger does not exist, skipping" au 1er run sont normaux.
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -69,6 +70,7 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- NOTICE "does not exist, skipping" = normal au 1er run
 DROP TRIGGER IF EXISTS products_updated_at ON products;
 CREATE TRIGGER products_updated_at
     BEFORE UPDATE ON products
@@ -99,6 +101,7 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- NOTICE "does not exist, skipping" = normal au 1er run
 DROP TRIGGER IF EXISTS orders_updated_at ON orders;
 CREATE TRIGGER orders_updated_at
     BEFORE UPDATE ON orders
@@ -140,10 +143,11 @@ CREATE INDEX IF NOT EXISTS idx_cart_items_user ON cart_items(user_id);
 -- =============================================================================
 -- DONNÉES INITIALES
 -- =============================================================================
--- Admin par défaut (mot de passe à hasher côté application, ex: "admin123")
+-- Admin par défaut : mot de passe "admin123" (hash = Java hashCode, côté serveur AuthService)
 INSERT INTO users (email, password_hash, name, role)
-VALUES ('admin@chrionline.com', 'CHANGER_COTE_SERVEUR_AVEC_BCRYPT', 'Administrateur', 'ADMIN')
+VALUES ('admin@chrionline.com', '-1892187234', 'Administrateur', 'ADMIN')
 ON CONFLICT (email) DO NOTHING;
+-- Si l'admin existait déjà avec l'ancien hash, exécuter une fois : UPDATE users SET password_hash = '-1892187234' WHERE email = 'admin@chrionline.com';
 
 -- Catégories
 INSERT INTO categories (name, description) VALUES
