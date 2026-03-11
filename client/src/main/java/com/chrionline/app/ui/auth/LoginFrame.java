@@ -176,20 +176,7 @@ public class LoginFrame extends JFrame {
         JButton registerBtn = new JButton("S'inscrire");
         stylePrimaryButton(registerBtn);
         registerBtn.addActionListener(e -> {
-            String email = regEmail.getText().trim();
-            String pass = new String(regPass.getPassword());
-            String name = nameField.getText().trim();
-            if (email.isEmpty() || pass.isEmpty() || name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Remplissez tous les champs.");
-                return;
-            }
-            tcpApiService.register(email, pass, name);
-            User u = tcpApiService.getCurrentUser();
-            if (u != null) {
-                JOptionPane.showMessageDialog(this, "Inscription réussie. Connectez-vous.");
-                cardLayout.show(cardPanel, "login");
-                emailField.setText(email);
-            }
+            doRegister(regEmail, regPass);
         });
         p.add(registerBtn, gbc);
         gbc.gridy = 8;
@@ -201,6 +188,23 @@ public class LoginFrame extends JFrame {
         });
         p.add(link, gbc);
         return p;
+    }
+
+    private void doRegister(JTextField regEmail, JPasswordField regPass) {
+        String email = regEmail.getText().trim();
+        String pass = new String(regPass.getPassword());
+        String name = nameField.getText().trim();
+        if (email.isEmpty() || pass.isEmpty() || name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Remplissez tous les champs.");
+            return;
+        }
+        tcpApiService.register(email, pass, name);
+        User u = tcpApiService.getCurrentUser();
+        if (u != null) {
+            JOptionPane.showMessageDialog(this, "Inscription réussie. Connectez-vous.");
+            cardLayout.show(cardPanel, "login");
+            emailField.setText(email);
+        }
     }
 
     private void doLogin() {
