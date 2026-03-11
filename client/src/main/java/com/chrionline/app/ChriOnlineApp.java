@@ -1,6 +1,7 @@
 package com.chrionline.app;
 
 import com.chrionline.app.network.ApiService;
+import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.home.HomeFrame;
 
 import javax.swing.*;
@@ -16,8 +17,24 @@ public class ChriOnlineApp {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
         SwingUtilities.invokeLater(() -> {
-            ApiService api = new ApiService();
-            HomeFrame home = new HomeFrame(api);
+            TcpApiService tcpApiServicepi = new TcpApiService();
+
+            if(!tcpApiServicepi.connect()){
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Connexion au serveur impossible !",
+                        "Connexion échouée",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Connexion au serveur réussie !",
+                        "Connexion réussie",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            HomeFrame home = new HomeFrame(tcpApiServicepi);
             home.setVisible(true);
         });
     }

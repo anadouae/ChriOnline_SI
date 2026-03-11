@@ -1,6 +1,7 @@
 package com.chrionline.app.ui.admin;
 
 import com.chrionline.app.network.ApiService;
+import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.auth.LoginFrame;
 import com.chrionline.app.ui.client.ClientMainFrame;
 
@@ -36,7 +37,7 @@ public class AdminFrame extends JFrame {
     private void doLogout() {
         api.logout();
         dispose();
-        new LoginFrame(api).setVisible(true);
+        new LoginFrame((TcpApiService) api).setVisible(true);
     }
 
     private void openClientCatalog() {

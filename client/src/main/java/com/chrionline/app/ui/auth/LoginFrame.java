@@ -2,6 +2,7 @@ package com.chrionline.app.ui.auth;
 
 import com.chrionline.app.model.User;
 import com.chrionline.app.network.ApiService;
+import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.client.ClientMainFrame;
 
 import javax.swing.*;
@@ -14,7 +15,7 @@ import java.awt.*;
  */
 public class LoginFrame extends JFrame {
 
-    private final ApiService api;
+    private final ApiService tcpApiService;
     private final Runnable onClose;
     private boolean loginSuccess;
     private JTextField emailField;
@@ -23,12 +24,12 @@ public class LoginFrame extends JFrame {
     private JPanel cardPanel;
     private CardLayout cardLayout;
 
-    public LoginFrame(ApiService api) {
-        this(api, null);
+    public LoginFrame(TcpApiService tcpApiService) {
+        this(tcpApiService, null);
     }
 
-    public LoginFrame(ApiService api, Runnable onClose) {
-        this.api = api;
+    public LoginFrame(ApiService tcpApiService, Runnable onClose) {
+        this.tcpApiService = tcpApiService;
         this.onClose = onClose;
         this.loginSuccess = false;
         setTitle("ChriOnline - Connexion");
@@ -182,8 +183,8 @@ public class LoginFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Remplissez tous les champs.");
                 return;
             }
-            api.login(email, pass);
-            User u = api.getCurrentUser();
+            tcpApiService.register(email, pass, name);
+            User u = tcpApiService.getCurrentUser();
             if (u != null) {
                 JOptionPane.showMessageDialog(this, "Inscription réussie. Connectez-vous.");
                 cardLayout.show(cardPanel, "login");
@@ -209,14 +210,14 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Renseignez l'email.");
             return;
         }
-        User user = api.login(email, password);
+        User user = tcpApiService.login(email, password);
         if (user == null) {
             JOptionPane.showMessageDialog(this, "Échec de connexion.");
             return;
         }
         loginSuccess = true;
         dispose();
-        ClientMainFrame clientFrame = new ClientMainFrame(api);
+        ClientMainFrame clientFrame = new ClientMainFrame(tcpApiService);
         clientFrame.setVisible(true);
     }
 

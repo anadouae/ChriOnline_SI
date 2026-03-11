@@ -43,7 +43,7 @@ public class HomeFrame extends JFrame {
         loginLink.addActionListener(e -> openLogin());
         JButton createAccount = new JButton("Créer un compte");
         createAccount.setBackground(UiConstants.BLUE_DARK);
-        createAccount.setForeground(Color.WHITE);
+        createAccount.setForeground(Color.BLACK);
         createAccount.setFocusPainted(false);
         createAccount.addActionListener(e -> openLogin());
         headerRight.add(loginLink);

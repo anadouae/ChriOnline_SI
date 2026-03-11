@@ -41,7 +41,7 @@ public class AuthService {
             if (e.getSQLState() != null && e.getSQLState().startsWith("23")) { // unique violation
                 return Protocol.ERROR + Protocol.SEPARATOR + "Email déjà utilisé";
             }
-            return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
+            return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_REGISTER_FAILED";
         }
     }
 
@@ -61,7 +61,7 @@ public class AuthService {
             ps.setString(1, email.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
-                    return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
+                    return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_LOGIN_FAILED";
                 }
                 int userId = rs.getInt("id");
                 String userEmail = rs.getString("email");
@@ -69,12 +69,12 @@ public class AuthService {
                 String role = rs.getString("role");
                 String storedHash = rs.getString("password_hash");
                 if (!checkPassword(password, storedHash)) {
-                    return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
+                    return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_LOGIN_FAILED";
                 }
                 return Protocol.OK + Protocol.SEPARATOR + userId + Protocol.SEPARATOR + userEmail + Protocol.SEPARATOR + name + Protocol.SEPARATOR + (role != null ? role : "CLIENT");
             }
         } catch (SQLException e) {
-            return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_FAILED";
+            return Protocol.ERROR + Protocol.SEPARATOR + "AUTH_LOGIN_FAILED";
         }
     }
 

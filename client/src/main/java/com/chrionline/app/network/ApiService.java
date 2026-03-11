@@ -63,6 +63,18 @@ public class ApiService {
         return currentUser;
     }
 
+    public boolean register(String email, String password, String name) {
+        for (User u : users) {
+            if (u.getEmail().equalsIgnoreCase(email)) {
+                return false; // Email déjà utilisé
+            }
+        }
+        User newUser = new User(users.size() + 1, name, email, UserRole.CLIENT);
+        users.add(newUser);
+        currentUser = newUser;
+        return true;
+    }
+
     public void logout() { currentUser = null; }
     public User getCurrentUser() { return currentUser; }
 
