@@ -45,7 +45,7 @@ public class HomeFrame extends JFrame {
         createAccount.setBackground(UiConstants.BLUE_DARK);
         createAccount.setForeground(Color.BLACK);
         createAccount.setFocusPainted(false);
-        createAccount.addActionListener(e -> openLogin());
+        createAccount.addActionListener(e -> openRegister());
         headerRight.add(loginLink);
         headerRight.add(createAccount);
         header.add(headerRight, BorderLayout.EAST);
@@ -165,6 +165,14 @@ public class HomeFrame extends JFrame {
     private void openLogin() {
         setVisible(false);
         LoginFrame login = new LoginFrame(api, () -> setVisible(true));
+        login.showLoginTab();
+        login.setVisible(true);
+    }
+
+    private void openRegister() {
+        setVisible(false);
+        LoginFrame login = new LoginFrame(api, () -> setVisible(true));
+        login.showRegisterTab();
         login.setVisible(true);
     }
 }

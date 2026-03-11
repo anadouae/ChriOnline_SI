@@ -223,6 +223,15 @@ public class LoginFrame extends JFrame {
         dispose();
         ClientMainFrame clientFrame = new ClientMainFrame(tcpApiService);
         clientFrame.setVisible(true);
+        clientFrame.showProductsPage();
+    }
+
+    public void showLoginTab() {
+        cardLayout.show(cardPanel, "login"); // loginn
+    }
+
+    public void showRegisterTab() {
+        cardLayout.show(cardPanel, "register");// register
     }
 
     private void stylePrimaryButton(JButton b) {

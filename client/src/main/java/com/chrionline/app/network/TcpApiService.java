@@ -359,11 +359,25 @@ public class TcpApiService extends ApiService {
      */
     @Override
     public List<Order> getOrdersForCurrentUser() {
+        // ensureConnected();
+        // UserDto u = getCurrentUser();
         List<Order> list = new ArrayList<>();
         if (currentUser == null) return list;
 
         String response = sendRequest("GET_ORDERS|" + currentUser.getId());
-        if (response == null || !response.startsWith("OK")) return list;
+        if (response == null || response.isBlank() || !response.startsWith("OK")) return list;
+
+        response = response.trim();
+
+        if(response.equals("OK") || response.equals("OK|")) {
+            // Cas où il n'y a aucune commande → OK ou OK| (sans données)
+            return list;
+        }
+        else if(response.startsWith("ERROR|")) {
+            // Cas d'erreur → on affiche un message d'erreur (optionnel)
+            System.err.println("[TcpApiService] Erreur lors de la récupération des commandes : " + response);
+            return list;
+        }
 
         String data = response.substring(3);
         if (data.isEmpty()) return list;

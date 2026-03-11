@@ -69,6 +69,12 @@ public class ClientMainFrame extends JFrame {
         adminFrame.setVisible(true);
     }
 
+    public void showProductsPage() {
+        if (tabs != null) {
+            tabs.setSelectedIndex(0); // Catalogue = page produits }
+        }
+    }
+
     private void doLogout() {
         api.logout();
         dispose();
