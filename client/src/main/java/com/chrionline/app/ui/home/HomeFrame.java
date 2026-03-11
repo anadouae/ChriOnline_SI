@@ -8,7 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Homepage (landing) affichée en premier : hero, "Se connecter", "Créer un compte", sections.
+ * Homepage (landing) affichée en premier : hero, "Se connecter", "Créer un
+ * compte", sections.
  */
 public class HomeFrame extends JFrame {
 
@@ -62,26 +63,15 @@ public class HomeFrame extends JFrame {
         heroTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         center.add(heroTitle);
         center.add(Box.createVerticalStrut(12));
-        JLabel heroDesc = new JLabel("<html>Découvrez des milliers de produits de qualité, livrés rapidement chez vous.<br>ChriOnline vous offre une expérience d'achat simple et sécurisée.</html>");
+        JLabel heroDesc = new JLabel(
+                "<html>Découvrez des milliers de produits de qualité, livrés rapidement chez vous.<br>ChriOnline vous offre une expérience d'achat simple et sécurisée.</html>");
         heroDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
         center.add(heroDesc);
         center.add(Box.createVerticalStrut(16));
         JPanel heroBtns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         heroBtns.setOpaque(false);
-        JButton startBtn = new JButton("Commencer maintenant");
-        startBtn.setBackground(UiConstants.BLUE_DARK);
-        startBtn.setForeground(UiConstants.GRAY_DARK);
-        startBtn.setFocusPainted(false);
-        startBtn.addActionListener(e -> openLogin());
-        JButton loginBtn2 = new JButton("Se connecter");
-        loginBtn2.setBorder(BorderFactory.createLineBorder(UiConstants.BLUE_DARK));
-        loginBtn2.setBackground(Color.WHITE);
-        loginBtn2.addActionListener(e -> openLogin());
-        heroBtns.add(startBtn);
-        heroBtns.add(loginBtn2);
-        center.add(heroBtns);
-        center.add(Box.createVerticalStrut(32));
 
+        center.add(heroBtns);
         JLabel whyTitle = new JLabel("Pourquoi choisir ChriOnline ?");
         whyTitle.setFont(whyTitle.getFont().deriveFont(Font.BOLD, 16f));
         whyTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -89,31 +79,56 @@ public class HomeFrame extends JFrame {
         center.add(Box.createVerticalStrut(12));
         JPanel whyCards = new JPanel(new GridLayout(1, 4, 12, 0));
         whyCards.setOpaque(false);
-        whyCards.add(buildWhyCard("Large catalogue", "Des milliers de produits disponibles dans toutes les catégories"));
+        whyCards.add(
+                buildWhyCard("Large catalogue", "Des milliers de produits disponibles dans toutes les catégories"));
         whyCards.add(buildWhyCard("Livraison rapide", "Recevez vos commandes en 24-48h partout en France"));
-        whyCards.add(buildWhyCard("Paiement sécurisé", "Vos transactions sont protégées par les dernières technologies"));
+        whyCards.add(
+                buildWhyCard("Paiement sécurisé", "Vos transactions sont protégées par les dernières technologies"));
         whyCards.add(buildWhyCard("Support 24/7", "Notre équipe est disponible pour vous aider à tout moment"));
         center.add(whyCards);
         center.add(Box.createVerticalStrut(24));
 
-        JPanel ctaPanel = new JPanel(new BorderLayout(8, 8));
+        JPanel ctaPanel = new JPanel();
+        ctaPanel.setLayout(new BoxLayout(ctaPanel, BoxLayout.Y_AXIS)); // Alignement vertical
         ctaPanel.setBackground(UiConstants.BLUE_DARK);
         ctaPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Titre centré
         JLabel ctaTitle = new JLabel("Prêt à commencer ?");
+        ctaTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ctaTitle.setHorizontalAlignment(SwingConstants.CENTER);
         ctaTitle.setForeground(Color.WHITE);
         ctaTitle.setFont(ctaTitle.getFont().deriveFont(Font.BOLD, 16f));
-        ctaPanel.add(ctaTitle, BorderLayout.NORTH);
+
+        // Description centrée
         JLabel ctaDesc = new JLabel("Créez votre compte gratuitement et découvrez tous nos produits.");
+        ctaDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
         ctaDesc.setForeground(Color.WHITE);
-        ctaPanel.add(ctaDesc, BorderLayout.CENTER);
+
+        // --- SOUS-PANEL POUR LES BOUTONS (Horizontal) ---
+        JPanel btnContainer = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        btnContainer.setOpaque(false); // Pour garder le fond bleu
+
+        // Boutons
         JButton ctaBtn = new JButton("Créer un compte gratuit");
-        ctaBtn.setBackground(Color.WHITE);
-        ctaBtn.setForeground(UiConstants.BLUE_DARK);
-        ctaBtn.setFocusPainted(false);
+        ctaBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         ctaBtn.addActionListener(e -> openLogin());
-        ctaPanel.add(ctaBtn, BorderLayout.SOUTH);
+
+        JButton ctaBtnAdmin = new JButton("Vous êtes admin ? Connectez-vous ici");
+        ctaBtnAdmin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ctaBtnAdmin.addActionListener(e -> openLogin());
+
+        btnContainer.add(ctaBtn);
+            btnContainer.add(ctaBtnAdmin);
+
+        // Assemblage avec espacement
+        ctaPanel.add(ctaTitle);
+        ctaPanel.add(Box.createVerticalStrut(10)); // Petit espace
+        ctaPanel.add(ctaDesc);
+        ctaPanel.add(Box.createVerticalStrut(20));
+        ctaPanel.add(btnContainer);
+
         center.add(ctaPanel);
-        center.add(Box.createVerticalStrut(24));
 
         JLabel howTitle = new JLabel("Comment ça marche ?");
         howTitle.setFont(howTitle.getFont().deriveFont(Font.BOLD, 16f));
@@ -140,9 +155,8 @@ public class HomeFrame extends JFrame {
         JPanel p = new JPanel(new BorderLayout(8, 8));
         p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(0xe0e0e0)),
-            BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        ));
+                BorderFactory.createLineBorder(new Color(0xe0e0e0)),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)));
         p.add(new JLabel(title, SwingConstants.CENTER), BorderLayout.NORTH);
         p.add(new JLabel("<html><center>" + text + "</center></html>"), BorderLayout.CENTER);
         return p;

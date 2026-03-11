@@ -4,6 +4,7 @@ import com.chrionline.app.model.User;
 import com.chrionline.app.model.UserRole;
 import com.chrionline.app.network.ApiService;
 import com.chrionline.app.network.TcpApiService;
+import com.chrionline.app.ui.admin.AdminFrame;
 import com.chrionline.app.ui.client.ClientMainFrame;
 import com.chrionline.common.Protocol;
 
@@ -134,7 +135,7 @@ public class LoginFrame extends JFrame {
         p.add(new JLabel("Comptes de test:"));
         p.add(new JLabel("Client: hello@example.com"));
         p.add(new JLabel("Admin: admin@chrionline.com"));
-        p.add(new JLabel("(mot de passe : 1234[Client], admin[Admin])"));
+        p.add(new JLabel("(mot de passe : 1234[Client], admin[1234])"));
         return p;
     }
 
@@ -225,9 +226,12 @@ public class LoginFrame extends JFrame {
         loginSuccess = true;
         dispose();
         ClientMainFrame clientFrame = new ClientMainFrame(tcpApiService);
+        //AdminFrame adminFrame = new AdminFrame(tcpApiService);
+
         clientFrame.setVisible(true);
         if (user.getRole() == UserRole.ADMIN){
-            clientFrame.openAdmin();
+            new AdminFrame(tcpApiService);
+            //adminFrame.openAdmin();
             System.out.println("LoginFrame: user is admin, opening admin page");
         }else
             clientFrame.showProductsPage();
