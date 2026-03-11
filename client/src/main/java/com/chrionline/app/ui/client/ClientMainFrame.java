@@ -16,14 +16,14 @@ import java.awt.*;
  */
 public class ClientMainFrame extends JFrame {
 
-    private final ApiService api;
+    private final TcpApiService tcpApiService;
     private JTabbedPane tabs;
     private CataloguePanel cataloguePanel;
     private CartPanel cartPanel;
     private OrdersPanel ordersPanel;
 
-    public ClientMainFrame(ApiService api) {
-        this.api = api;
+    public ClientMainFrame(TcpApiService tcpApiService) {
+        this.tcpApiService = tcpApiService;
         setTitle("ChriOnline - Client");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 620);
@@ -34,14 +34,14 @@ public class ClientMainFrame extends JFrame {
 
     private void buildUI() {
         setLayout(new BorderLayout());
-        String userName = api.getCurrentUser() != null ? api.getCurrentUser().getName() : "Utilisateur";
-        boolean isAdmin = api.getCurrentUser() != null && api.getCurrentUser().isAdmin();
+        String userName = tcpApiService.getCurrentUser() != null ? tcpApiService.getCurrentUser().getName() : "Utilisateur";
+        boolean isAdmin = tcpApiService.getCurrentUser() != null && tcpApiService.getCurrentUser().isAdmin();
         add(new ClientHeader(userName, this::doLogout, isAdmin ? this::openAdmin : null), BorderLayout.NORTH);
 
         tabs = new JTabbedPane();
-        cataloguePanel = new CataloguePanel(api, this::refreshCart);
-        cartPanel = new CartPanel(api, this::refreshCart);
-        ordersPanel = new OrdersPanel(api);
+        cataloguePanel = new CataloguePanel(tcpApiService, this::refreshCart);
+        cartPanel = new CartPanel(tcpApiService, this::refreshCart);
+        ordersPanel = new OrdersPanel(tcpApiService);
 
         tabs.addTab("Catalogue", cataloguePanel);
         tabs.addTab("Mon panier", cartPanel);
@@ -56,16 +56,16 @@ public class ClientMainFrame extends JFrame {
     }
 
     private void updateCartTabTitle() {
-        int count = api.getCart().stream().mapToInt(c -> c.getQuantity()).sum();
+        int count = tcpApiService.getCart().stream().mapToInt(c -> c.getQuantity()).sum();
         if (count > 0)
             tabs.setTitleAt(1, "Mon panier (" + count + ")");
         else
             tabs.setTitleAt(1, "Mon panier");
     }
 
-    private void openAdmin() {
+    public void openAdmin() {
         dispose();
-        AdminFrame adminFrame = new AdminFrame(api);
+        AdminFrame adminFrame = new AdminFrame(tcpApiService);
         adminFrame.setVisible(true);
     }
 
@@ -76,9 +76,9 @@ public class ClientMainFrame extends JFrame {
     }
 
     private void doLogout() {
-        api.logout();
+        tcpApiService.logout();
         dispose();
-        LoginFrame login = new LoginFrame((TcpApiService) api);
+        LoginFrame login = new LoginFrame((TcpApiService) tcpApiService);
         login.setVisible(true);
     }
 }

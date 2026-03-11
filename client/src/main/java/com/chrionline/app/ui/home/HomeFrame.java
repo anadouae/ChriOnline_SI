@@ -1,6 +1,6 @@
 package com.chrionline.app.ui.home;
 
-import com.chrionline.app.network.ApiService;
+import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.auth.LoginFrame;
 import com.chrionline.app.ui.components.UiConstants;
 
@@ -12,10 +12,10 @@ import java.awt.*;
  */
 public class HomeFrame extends JFrame {
 
-    private final ApiService api;
+    private final TcpApiService tcpApiService;
 
-    public HomeFrame(ApiService api) {
-        this.api = api;
+    public HomeFrame(TcpApiService tcpApiService) {
+        this.tcpApiService = tcpApiService;
         setTitle("ChriOnline - Votre boutique en ligne");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 750);
@@ -70,7 +70,7 @@ public class HomeFrame extends JFrame {
         heroBtns.setOpaque(false);
         JButton startBtn = new JButton("Commencer maintenant");
         startBtn.setBackground(UiConstants.BLUE_DARK);
-        startBtn.setForeground(Color.WHITE);
+        startBtn.setForeground(UiConstants.GRAY_DARK);
         startBtn.setFocusPainted(false);
         startBtn.addActionListener(e -> openLogin());
         JButton loginBtn2 = new JButton("Se connecter");
@@ -164,14 +164,14 @@ public class HomeFrame extends JFrame {
 
     private void openLogin() {
         setVisible(false);
-        LoginFrame login = new LoginFrame(api, () -> setVisible(true));
+        LoginFrame login = new LoginFrame(tcpApiService, () -> setVisible(true));
         login.showLoginTab();
         login.setVisible(true);
     }
 
     private void openRegister() {
         setVisible(false);
-        LoginFrame login = new LoginFrame(api, () -> setVisible(true));
+        LoginFrame login = new LoginFrame(tcpApiService, () -> setVisible(true));
         login.showRegisterTab();
         login.setVisible(true);
     }

@@ -1,9 +1,11 @@
 package com.chrionline.app.ui.auth;
 
 import com.chrionline.app.model.User;
+import com.chrionline.app.model.UserRole;
 import com.chrionline.app.network.ApiService;
 import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.client.ClientMainFrame;
+import com.chrionline.common.Protocol;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +17,7 @@ import java.awt.*;
  */
 public class LoginFrame extends JFrame {
 
-    private final ApiService tcpApiService;
+    private final TcpApiService tcpApiService;
     private final Runnable onClose;
     private boolean loginSuccess;
     private JTextField emailField;
@@ -28,7 +30,7 @@ public class LoginFrame extends JFrame {
         this(tcpApiService, null);
     }
 
-    public LoginFrame(ApiService tcpApiService, Runnable onClose) {
+    public LoginFrame(TcpApiService tcpApiService, Runnable onClose) {
         this.tcpApiService = tcpApiService;
         this.onClose = onClose;
         this.loginSuccess = false;
@@ -130,9 +132,9 @@ public class LoginFrame extends JFrame {
         p.setBackground(new Color(0xe3f2fd));
         p.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         p.add(new JLabel("Comptes de test:"));
-        p.add(new JLabel("Client: jean@example.com"));
+        p.add(new JLabel("Client: hello@example.com"));
         p.add(new JLabel("Admin: admin@chrionline.com"));
-        p.add(new JLabel("(mot de passe : n'importe lequel)"));
+        p.add(new JLabel("(mot de passe : 1234[Client], admin[Admin])"));
         return p;
     }
 
@@ -219,11 +221,16 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Échec de connexion.");
             return;
         }
+
         loginSuccess = true;
         dispose();
         ClientMainFrame clientFrame = new ClientMainFrame(tcpApiService);
         clientFrame.setVisible(true);
-        clientFrame.showProductsPage();
+        if (user.getRole() == UserRole.ADMIN){
+            clientFrame.openAdmin();
+            System.out.println("LoginFrame: user is admin, opening admin page");
+        }else
+            clientFrame.showProductsPage();
     }
 
     public void showLoginTab() {

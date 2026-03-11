@@ -11,6 +11,8 @@ public final class UiConstants {
 
     public static final Color BLUE_DARK = new Color(0x1e3a5f);
     public static final Color BLUE_LIGHT = new Color(0xe3f2fd);
+    public static final Color GRAY_DARK = new Color(0x616161);
+    public static final Color GRAY_LIGHT = new Color(0xf5f5f5);
     public static final Color BACKGROUND_LIGHT = new Color(0xf5f5f5);
     public static final Color STATUS_LIVREE = new Color(0x4caf50);
     public static final Color STATUS_ATTENTE = new Color(0xff9800);

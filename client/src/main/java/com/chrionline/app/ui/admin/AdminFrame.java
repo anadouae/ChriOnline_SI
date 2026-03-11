@@ -10,11 +10,11 @@ import java.awt.*;
 
 public class AdminFrame extends JFrame {
 
-    private final ApiService api;
+    private final TcpApiService tcpApiService;
     private JTabbedPane tabs;
 
-    public AdminFrame(ApiService api) {
-        this.api = api;
+    public AdminFrame(TcpApiService tcpApiService) {
+        this.tcpApiService = tcpApiService;
         setTitle("ChriOnline - Administration");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 650);
@@ -27,24 +27,24 @@ public class AdminFrame extends JFrame {
         setLayout(new BorderLayout());
         add(new AdminHeader(this::doLogout, this::openClientCatalog), BorderLayout.NORTH);
         tabs = new JTabbedPane();
-        tabs.addTab("Tableau de bord", new DashboardPanel(api));
-        tabs.addTab("Produits", new ProductsPanel(api));
-        tabs.addTab("Commandes", new AdminOrdersPanel(api));
-        tabs.addTab("Utilisateurs", new UsersPanel(api));
+        tabs.addTab("Tableau de bord", new DashboardPanel(tcpApiService));
+        tabs.addTab("Produits", new ProductsPanel(tcpApiService));
+        tabs.addTab("Commandes", new AdminOrdersPanel(tcpApiService));
+        tabs.addTab("Utilisateurs", new UsersPanel(tcpApiService));
         add(tabs, BorderLayout.CENTER);
     }
 
     private void doLogout() {
-        api.logout();
+        tcpApiService.logout();
         dispose();
-        new LoginFrame((TcpApiService) api).setVisible(true);
+        new LoginFrame((TcpApiService) tcpApiService).setVisible(true);
     }
 
     private void openClientCatalog() {
-        if (api.getCurrentUser() != null) {
-            api.login(api.getCurrentUser().getEmail(), "");
+        if (tcpApiService.getCurrentUser() != null) {
+            tcpApiService.login(tcpApiService.getCurrentUser().getEmail(), "");
             dispose();
-            new ClientMainFrame(api).setVisible(true);
+            new ClientMainFrame(tcpApiService).setVisible(true);
         }
     }
 }
