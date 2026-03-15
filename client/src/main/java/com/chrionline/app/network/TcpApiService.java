@@ -39,8 +39,8 @@ public class TcpApiService extends ApiService {
     private final int port;
 
     private Socket socket;
-    private BufferedReader inFromClient;
-    private PrintWriter outToClient;
+    private BufferedReader inFromServer;
+    private PrintWriter outToServer;
 
     private User currentUser;
 
@@ -60,7 +60,7 @@ public class TcpApiService extends ApiService {
     // ─── Connexion / déconnexion TCP ──────────────────────────────────────────
     /**
      * Ouvre la connexion TCP au serveur.
-     * À appeler avant toutToClientusage, ou laisser connect() le faire automatiquement.
+     * À appeler avant toutToServerusage, ou laisser connect() le faire automatiquement.
      */
     public boolean connect() {
         try {
@@ -68,11 +68,11 @@ public class TcpApiService extends ApiService {
             socket = new Socket(host, port);
 
             // Créer le lecteur : lit les réponses du serveur ligne par ligne
-            inFromClient= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inFromServer= new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             // Créer l'écrivain : envoie des lignes au serveur
             //    "true" = auto-flush : chaque println() envoie immédiatement
-            outToClient= new PrintWriter(socket.getOutputStream(), true);
+            outToServer= new PrintWriter(socket.getOutputStream(), true);
             System.out.println("[NetworkClient] Connecté à " + host + ":" + port);
             return true;
         } catch (IOException e) {
@@ -85,15 +85,15 @@ public class TcpApiService extends ApiService {
     /** Ferme proprement la connexion TCP. */
     public void disconnect() {
         try {
-            if (inFromClient != null) {
-                inFromClient.close();
+            if (inFromServer != null) {
+                inFromServer.close();
             }
         } catch (IOException e) {
             System.err.println("[NetworkClient] Error while closing input stream: " + e.getMessage());
         }
 
-        if (outToClient != null) {
-            outToClient.close();
+        if (outToServer != null) {
+            outToServer.close();
         }
 
         try {
@@ -105,8 +105,8 @@ public class TcpApiService extends ApiService {
             System.err.println("[NetworkClient] Erreur lors de la déconnexion : " + e.getMessage());
         } finally {
             socket = null;
-            inFromClient = null;
-            outToClient = null;
+            inFromServer = null;
+            outToServer = null;
         }
     }
 
@@ -131,8 +131,8 @@ public class TcpApiService extends ApiService {
                 }
             }
             System.out.println("[TCP][CLIENT -> SERVER] " + request);
-            outToClient.println(request);
-            String response = inFromClient.readLine();
+            outToServer.println(request);
+            String response = inFromServer.readLine();
             if (response == null) {
                 System.err.println("[TCP][SERVER -> CLIENT] <null> (connection closed by server)");
                 disconnect();

@@ -115,6 +115,7 @@ public class OrderService {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             StringBuilder sb = new StringBuilder(Protocol.OK);
+            sb.append(Protocol.SEPARATOR);
             String sep = "";
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

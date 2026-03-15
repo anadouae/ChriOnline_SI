@@ -2,6 +2,7 @@ package com.chrionline.app.ui.client;
 
 import com.chrionline.app.model.CartItem;
 import com.chrionline.app.network.ApiService;
+import com.chrionline.app.network.TcpApiService;
 import com.chrionline.app.ui.components.UiConstants;
 
 import javax.swing.*;
@@ -13,13 +14,13 @@ import java.awt.*;
  */
 public class CartPanel extends JPanel {
 
-    private final ApiService api;
+    private final TcpApiService api;
     private final Runnable onCartChange;
     private JTable table;
     private DefaultTableModel tableModel;
     private JLabel totalLabel;
 
-    public CartPanel(ApiService api, Runnable onCartChange) {
+    public CartPanel(TcpApiService api, Runnable onCartChange) {
         this.api = api;
         this.onCartChange = onCartChange;
         setLayout(new BorderLayout(12, 12));

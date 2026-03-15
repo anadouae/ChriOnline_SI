@@ -24,6 +24,7 @@ public class ProductService {
              ResultSet rs = st.executeQuery(sql)) {
 
             StringBuilder sb = new StringBuilder(Protocol.OK);
+            sb.append(Protocol.SEPARATOR);
             String sep = "";
             while (rs.next()) {
                 sb.append(sep);

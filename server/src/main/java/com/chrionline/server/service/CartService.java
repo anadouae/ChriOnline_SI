@@ -90,6 +90,7 @@ public class CartService {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             StringBuilder sb = new StringBuilder(Protocol.OK);
+            sb.append(Protocol.SEPARATOR);
             double total = 0;
             String sep = "";
             try (ResultSet rs = ps.executeQuery()) {
