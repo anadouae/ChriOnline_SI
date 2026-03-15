@@ -37,7 +37,7 @@ mvn exec:java -Dexec.mainClass="com.chrionline.app.ChriOnlineApp"
 
 ## Comptes de test (mode mock)
 
-- **Client :** `jean@example.com` (mot de passe quelconque)
-- **Admin :** `admin@chrionline.com` (mot de passe quelconque)
+- **Client :** `jean@example.com` (mot de passe : 1234)
+- **Admin :** `admin@chrionline.com` (mot de passe : 1234)
 
 L’interface client utilise par défaut des données mock (`ApiService`). Pour utiliser le vrai serveur, remplacer par des appels TCP (protocole dans `common/Protocol.java`).
